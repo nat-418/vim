@@ -305,8 +305,9 @@ au BufNewFile,BufRead *.csdl			setf csdl
 " Cabal
 au BufNewFile,BufRead *.cabal			setf cabal
 
-" Cdrdao TOC
-au BufNewFile,BufRead *.toc			setf cdrtoc
+" Cdrdao TOC or LaTeX \tableofcontents files
+au BufNewFile,BufRead *.toc
+	\ if getline(1) =~# '\\contentsline' |setf tex|else|setf cdrtoc|endif
 
 " Cdrdao config
 au BufNewFile,BufRead */etc/cdrdao.conf,*/etc/defaults/cdrdao,*/etc/default/cdrdao,.cdrdao	setf cdrdaoconf
@@ -513,6 +514,10 @@ au BufNewFile,BufRead s6-*                              setf execline
 " Fontconfig config files
 au BufNewFile,BufRead fonts.conf			setf xml
 
+" Libreoffice config files
+au BufNewFile,BufRead *.xcu,*.xlb,*.xlc,*.xba		setf xml
+au BufNewFile,BufRead psprint.conf,sofficerc		setf dosini
+
 " Lynx config files
 au BufNewFile,BufRead lynx.cfg			setf lynx
 
@@ -523,9 +528,15 @@ au BufNewFile,BufRead *.lrc			setf lyrics
 au BufNewFile,BufRead *.quake,cm3.cfg		setf m3quake
 au BufNewFile,BufRead m3makefile,m3overrides	setf m3build
 
-" Many Python tools use dosini as their config, like setuptools, pudb, coverage
+" XDG mimeapps.list
+au BufNewFile,BufRead mimeapps.list	setf dosini
+
+" Many Python tools use dosini as their config, like pip, setuptools, pudb, coverage
 " (must be before *.cfg)
-au BufNewFile,BufRead setup.cfg,pudb.cfg,.coveragerc	setf dosini
+au BufNewFile,BufRead pip.conf,setup.cfg,pudb.cfg,.coveragerc	setf dosini
+
+" LXQt's programs use dosini as their config
+au BufNewFile,BufRead */{lxqt,screengrab}/*.conf	setf dosini
 
 " Quake
 au BufNewFile,BufRead *baseq[2-3]/*.cfg,*id1/*.cfg	setf quake
@@ -533,6 +544,11 @@ au BufNewFile,BufRead *quake[1-3]/*.cfg			setf quake
 
 " Quake C
 au BufNewFile,BufRead *.qc			setf c
+
+" LaTeX packages use LaTeX as their configuration, such as:
+" ~/.texlive/texmf-config/tex/latex/hyperref/hyperref.cfg
+" ~/.texlive/texmf-config/tex/latex/docstrip/docstrip.cfg
+au BufNewFile,BufRead */tex/latex/**.cfg		setf tex
 
 " Configure files
 au BufNewFile,BufRead *.cfg\c			call dist#ft#FTcfg()
@@ -663,7 +679,10 @@ au BufNewFile,BufRead *.dsl
 au BufNewFile,BufRead *.dtd			setf dtd
 
 " DTS/DSTI/DTSO (device tree files)
-au BufNewFile,BufRead *.dts,*.dtsi,*.dtso,*.its	setf dts
+au BufNewFile,BufRead *.dts,*.dtsi,*.dtso,*.its,*.keymap	setf dts
+
+" Earthfile
+au BufNewFile,BufRead Earthfile			setf earthfile
 
 " EDIF (*.edf,*.edif,*.edn,*.edo) or edn
 au BufNewFile,BufRead *.ed\(f\|if\|o\)		setf edif
@@ -1255,7 +1274,11 @@ au BufNewFile,BufRead */etc/login.defs		setf logindefs
 au BufNewFile,BufRead *.lgt			setf logtalk
 
 " LOTOS
-au BufNewFile,BufRead *.lot,*.lotos		setf lotos
+au BufNewFile,BufRead *.lotos		setf lotos
+
+" LOTOS or LaTeX \listoftables files
+au BufNewFile,BufRead *.lot
+	\ if getline(1) =~# '\\contentsline' |setf tex|else|setf lotos|endif
 
 " Lout (also: *.lt)
 au BufNewFile,BufRead *.lou,*.lout		setf lout
@@ -1319,7 +1342,12 @@ au BufNewFile,BufRead *.mv,*.mpl,*.mws		setf maple
 au BufNewFile,BufRead *.map			setf map
 
 " Markdown
-au BufNewFile,BufRead *.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md  setf markdown
+au BufNewFile,BufRead *.markdown,*.mdown,*.mkd,*.mkdn,*.mdwn,*.md
+	\ if exists("g:filetype_md") |
+	\   exe "setf " . g:filetype_md |
+	\ else |
+	\   setf markdown |
+	\ endif
 
 " Mason
 au BufNewFile,BufRead *.mason,*.mhtml,*.comp	setf mason
@@ -1575,8 +1603,16 @@ au BufNewFile,BufRead *.pas				setf pascal
 " Pascal or Puppet manifest
 au BufNewFile,BufRead *.pp				call dist#ft#FTpp()
 
-" Delphi or Lazarus program file
-au BufNewFile,BufRead *.dpr,*.lpr			setf pascal
+" Delphi
+au BufNewFile,BufRead *.dpr				setf pascal
+
+" Xilinx labtools project file or Lazarus program file
+au BufNewFile,BufRead *.lpr
+	\ if getline(1) =~# "<?xml" |
+	\   setf xml |
+	\ else |
+	\   setf pascal |
+	\ endif
 
 " Free Pascal makefile definition file
 au BufNewFile,BufRead *.fpc				setf fpcmake
@@ -1841,7 +1877,7 @@ else
 endif
 
 " R profile file
-au BufNewFile,BufRead .Rprofile,Rprofile,Rprofile.site	setf r
+au BufNewFile,BufRead .Rhistory,.Rprofile,Rprofile,Rprofile.site	setf r
 
 " RSS looks like XML
 au BufNewFile,BufRead *.rss				setf xml
@@ -2308,6 +2344,11 @@ au BufRead,BufNewFile *.tfvars			setf terraform-vars
 au BufNewFile,BufRead *.latex,*.sty,*.dtx,*.ltx,*.bbl	setf tex
 au BufNewFile,BufRead *.tex			call dist#ft#FTtex()
 
+" LaTeX packages will generate some medium LaTeX files during compiling
+" They should be ignored by .gitignore https://github.com/github/gitignore/blob/main/TeX.gitignore
+" Sometime we need to view its content for debugging
+au BufNewFile,BufRead *.{pgf,nlo,nls,out,thm,eps_tex,pygtex,pygstyle,clo,aux,brf,ind,lof,loe,nav,vrb,ins,tikz,bbx,cbx,beamer}	setf tex
+
 " ConTeXt
 au BufNewFile,BufRead *.mkii,*.mkiv,*.mkvi,*.mkxl,*.mklx   setf context
 
@@ -2587,6 +2628,10 @@ au BufNewFile,BufRead xorg.conf,xorg.conf-4	let b:xf86conf_xfree86_version = 4 |
 " Xinetd conf
 au BufNewFile,BufRead */etc/xinetd.conf		setf xinetd
 
+" Xilinx Vivado/Vitis project files and block design files
+au BufNewFile,BufRead *.xpr,*.xpfm,*.spfm,*.bxml		setf xml
+au BufNewFile,BufRead *.bd,*.bda,*.xci				setf json
+
 " XS Perl extension interface language
 au BufNewFile,BufRead *.xs			setf xs
 
@@ -2863,6 +2908,9 @@ au BufNewFile,BufRead */etc/hostname.*		call s:StarSetf('config')
 " Pam conf
 au BufNewFile,BufRead */etc/pam.d/*		call s:StarSetf('pamconf')
 
+" Pandoc
+au BufNewFile,BufRead,BufFilePost *.pandoc,*.pdk,*.pd,*.pdc	setf pandoc
+
 " Printcap and Termcap
 au BufNewFile,BufRead *printcap*
 	\ if !did_filetype()
@@ -2975,6 +3023,8 @@ au filetypedetect BufNewFile,BufRead,StdinReadPost *
 " Yarn lock
 au BufNewFile,BufRead yarn.lock			setf yaml
 
+" Zathurarc
+au BufNewFile,BufRead zathurarc			setf zathurarc
 
 " If the GUI is already running, may still need to install the Syntax menu.
 " Don't do it when the 'M' flag is included in 'guioptions'.

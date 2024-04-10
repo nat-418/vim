@@ -1515,6 +1515,7 @@ typedef enum
     , HLF_QFL	    // quickfix window line currently selected
     , HLF_ST	    // status lines of terminal windows
     , HLF_STNC	    // status lines of not-current terminal windows
+    , HLF_MSG	    // message area
     , HLF_COUNT	    // MUST be the last one
 } hlf_T;
 
@@ -1526,7 +1527,7 @@ typedef enum
 		  'B', 'P', 'R', 'L', \
 		  '+', '=', '[', ']', '{', '}', 'x', 'X', \
 		  '*', '#', '_', '!', '.', 'o', 'q', \
-		  'z', 'Z'}
+		  'z', 'Z', 'g'}
 
 /*
  * Boolean constants
@@ -1750,6 +1751,7 @@ void *vim_memset(void *, int, size_t);
 
 # define MB_STRICMP(d, s)	mb_strnicmp((char_u *)(d), (char_u *)(s), (int)MAXCOL)
 # define MB_STRNICMP(d, s, n)	mb_strnicmp((char_u *)(d), (char_u *)(s), (int)(n))
+# define MB_STRNICMP2(d, s, n1, n2)	mb_strnicmp2((char_u *)(d), (char_u *)(s), (int)(n1), (int)(n2))
 
 #define STRCAT(d, s)	    strcat((char *)(d), (char *)(s))
 #define STRNCAT(d, s, n)    strncat((char *)(d), (char *)(s), (size_t)(n))
@@ -2817,7 +2819,6 @@ typedef int (*opt_expand_cb_T)(optexpand_T *args, int *numMatches, char_u ***mat
 // flags for find_name_end()
 #define FNE_INCL_BR	1	// include [] in name
 #define FNE_CHECK_START	2	// check name starts with valid character
-#define FNE_ALLOW_CURLY	4	// always allow curly braces name
 
 // BSD is supposed to cover FreeBSD and similar systems.
 #if (defined(SUN_SYSTEM) || defined(BSD) || defined(__FreeBSD_kernel__)) \

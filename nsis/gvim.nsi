@@ -728,12 +728,12 @@ Section "$(str_section_nls)" id_section_nls
 	!insertmacro InstallLib DLL NOTSHARED REBOOT_NOTPROTECTED \
 	    "${GETTEXT}\gettext${BIT}\libiconv-2.dll" \
 	    "$0\libiconv-2.dll" "$0"
-  !if /FileExists "${GETTEXT}\gettext${BIT}\libgcc_s_sjlj-1.dll"
-	# Install libgcc_s_sjlj-1.dll only if it is needed.
-	!insertmacro InstallLib DLL NOTSHARED REBOOT_NOTPROTECTED \
-	    "${GETTEXT}\gettext${BIT}\libgcc_s_sjlj-1.dll" \
-	    "$0\libgcc_s_sjlj-1.dll" "$0"
-  !endif
+# Install libgcc_s_sjlj-1.dll only if it is needed.
+#  !if /FileExists "${GETTEXT}\gettext${BIT}\libgcc_s_sjlj-1.dll"
+#	!insertmacro InstallLib DLL NOTSHARED REBOOT_NOTPROTECTED \
+#	    "${GETTEXT}\gettext${BIT}\libgcc_s_sjlj-1.dll" \
+#	    "$0\libgcc_s_sjlj-1.dll" "$0"
+#  !endif
 
 	${If} ${SectionIsSelected} ${id_section_editwith}
 	  ${If} ${RunningX64}
@@ -759,12 +759,12 @@ Section "$(str_section_nls)" id_section_nls
 	  !insertmacro InstallLib DLL NOTSHARED REBOOT_NOTPROTECTED \
 	      "${GETTEXT}\gettext32\libiconv-2.dll" \
 	      "$0\GvimExt32\libiconv-2.dll" "$0\GvimExt32"
-  !if /FileExists "${GETTEXT}\gettext32\libgcc_s_sjlj-1.dll"
-	  # Install libgcc_s_sjlj-1.dll only if it is needed.
-	  !insertmacro InstallLib DLL NOTSHARED REBOOT_NOTPROTECTED \
-	      "${GETTEXT}\gettext32\libgcc_s_sjlj-1.dll" \
-	      "$0\GvimExt32\libgcc_s_sjlj-1.dll" "$0\GvimExt32"
-  !endif
+# Install libgcc_s_sjlj-1.dll only if it is needed.
+#  !if /FileExists "${GETTEXT}\gettext32\libgcc_s_sjlj-1.dll"
+#	  !insertmacro InstallLib DLL NOTSHARED REBOOT_NOTPROTECTED \
+#	      "${GETTEXT}\gettext32\libgcc_s_sjlj-1.dll" \
+#	      "$0\GvimExt32\libgcc_s_sjlj-1.dll" "$0\GvimExt32"
+#  !endif
 	${EndIf}
 SectionEnd
 !endif
